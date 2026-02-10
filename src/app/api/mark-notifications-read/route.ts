@@ -9,8 +9,8 @@ export async function PATCH(request: NextRequest) {
   const { guardian_id } = await request.json();
   if (!guardian_id) return NextResponse.json({ error: "guardian_id required" }, { status: 400 });
   const { error } = await supabase
-    .from("notifications")
-    .update({ read: true })
+    .from("notification_reads")
+    .update({ read: true, read_at: new Date().toISOString() })
     .eq("guardian_id", guardian_id)
     .eq("read", false);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

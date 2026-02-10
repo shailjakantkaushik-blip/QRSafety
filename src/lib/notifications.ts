@@ -10,6 +10,6 @@ export async function createPlatformNotification({
   const supabase = supabaseAdmin();
   const { error } = await supabase
     .from("notifications")
-    .insert({ guardian_id: guardianId, message });
+    .insert({ message });
   return !error;
 }

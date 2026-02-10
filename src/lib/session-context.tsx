@@ -12,6 +12,10 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       const supabase = supabaseBrowser();
       const { data: auth } = await supabase.auth.getUser();
       setUser(auth.user || null);
+      if (auth.user && typeof window !== "undefined") {
+        // Set guardian_id in localStorage
+        localStorage.setItem("guardian_id", auth.user.id);
+      }
     }
     fetchUser();
   }, []);

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export function NotificationDropdown() {
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState<{ id: string; message: string; created_at: string; read: boolean; guardian_id: string }[]>([]);
+  const [notifications, setNotifications] = useState<{ id: string; message: string; created_at: string; read: boolean }[]>([]);
   const [loading, setLoading] = useState(false);
   const guardianId = typeof window !== "undefined" ? localStorage.getItem("guardian_id") || "" : "";
   const [hasUnread, setHasUnread] = useState(false);

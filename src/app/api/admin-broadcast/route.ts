@@ -48,8 +48,16 @@ export async function POST(req: NextRequest) {
 
     // Create notification for all guardians if enabled
     if (sendWeb) {
-      for (const guardian of guardians) {
-        await supabase.from("notifications").insert({ guardian_id: guardian.id, message });
+      // Create a single notification
+      const { data: notification, error: notificationError } = await supabase.from("notifications").insert({ message }).select().single();
+      if (notificationError) {
+        return NextResponse.json({ error: notificationError.message }, { status: 500 });
+      }
+      // Insert notification_reads for each guardian
+      const readsPayload = guardians.map((g) => ({ notification_id: notification.id, guardian_id: g.id, read: false }));
+      const { error: readsError } = await supabase.from("notification_reads").insert(readsPayload);
+      if (readsError) {
+        return NextResponse.json({ error: readsError.message }, { status: 500 });
       }
     }
 
