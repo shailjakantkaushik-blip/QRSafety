@@ -3,15 +3,26 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DownloadQrButton } from "@/components/individuals/download-qr-button";
 
-export default async function IndividualDetailPage({ params }: { params: { id: string } }) {
+export default async function IndividualDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  
+  if (!id) {
+    return (
+      <div className="space-y-4">
+        <div className="text-2xl font-bold">Not found</div>
+        <div className="text-muted-foreground">Invalid individual ID</div>
+        <Link href="/individuals"><Button>Back</Button></Link>
+      </div>
+    );
+  }
+
   const supabase = await supabaseServer();
 
   const { data: indiv, error } = await supabase
     .from("individuals")
     .select("id, display_name, public_id, allergies, medical_notes, is_public")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (error) {
@@ -39,7 +50,10 @@ export default async function IndividualDetailPage({ params }: { params: { id: s
         </div>
         <div className="flex gap-2">
           <Link href="/individuals"><Button variant="outline">Back</Button></Link>
-          <DownloadQrButton individualId={indiv.id} />
+          <Link href={`/individuals/${indiv.id}/edit`}><Button className="bg-slate-400 hover:bg-slate-500">Edit</Button></Link>
+          <Link href={`/individuals/order?individualId=${indiv.id}`}>
+            <Button className="bg-green-600 hover:bg-green-700">Place Order</Button>
+          </Link>
         </div>
       </div>
 

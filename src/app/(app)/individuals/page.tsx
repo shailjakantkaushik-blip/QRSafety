@@ -17,11 +17,19 @@ export default async function IndividualsPage() {
         <div className="text-muted-foreground">Add and manage profiles. Each profile has its own QR code.</div>
       </div>
 
+
       <Card className="p-6">
         <div className="font-semibold">Add a new individual</div>
         <div className="text-sm text-muted-foreground">Keep it minimal for emergencies.</div>
         <div className="mt-4">
           <CreateIndividualForm />
+        </div>
+        <div className="mt-6">
+          <Link href="/individuals/order">
+            <button className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50 w-full">
+              Place Order
+            </button>
+          </Link>
         </div>
       </Card>
 

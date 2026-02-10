@@ -31,14 +31,11 @@ export default function HomePage() {
               Built for emergencies • Fast • Private by default
             </Badge>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-              One scan. Instant help.
-              <span className="block text-muted-foreground">
-                Emergency contacts & allergies — always accessible.
-              </span>
+              One scan could save a life — and bring someone back to their family.
             </h1>
             <p className="text-lg text-muted-foreground">
-              Create profiles for kids or seniors. Download QR for printing.
-              Later: wearable ordering + tracking devices + mobile app.
+              Create profiles for kids or seniors. Order wearable QR products
+              (wristband, pin, belt clip). Later: live tracking devices + mobile app.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/signup"><Button size="lg">Create a guardian account</Button></Link>
@@ -46,7 +43,7 @@ export default function HomePage() {
             </div>
             <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-2"><Shield className="h-4 w-4" /> Secure</span>
-              <span className="inline-flex items-center gap-2"><Users className="h-4 w-4" /> Multiple profiles</span>
+              <span className="inline-flex items-center gap-2"><Users className="h-4 w-4" /> Multiple individuals</span>
               <span className="inline-flex items-center gap-2"><MapPin className="h-4 w-4" /> Tracking ready</span>
             </div>
           </div>

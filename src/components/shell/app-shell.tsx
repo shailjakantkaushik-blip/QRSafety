@@ -1,10 +1,28 @@
+"use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { QrCode, LayoutDashboard, Users, Shield } from "lucide-react";
+import { QrCode, LayoutDashboard, Users, LogOut, Shield } from "lucide-react";
 import { LogoutButton } from "@/components/shell/logout-button";
+import { useEffect, useState } from "react";
+import { supabaseBrowser } from "@/lib/supabase/client";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    async function fetchAdmin() {
+      const supabase = supabaseBrowser();
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) return;
+      const { data: guardian } = await supabase
+        .from("guardians")
+        .select("is_admin")
+        .eq("id", auth.user.id)
+        .maybeSingle();
+      setIsAdmin(guardian?.is_admin === true);
+    }
+    fetchAdmin();
+  }, []);
   return (
     <div className="min-h-screen">
       <div className="mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-[260px_1fr]">
@@ -31,12 +49,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 Individuals
               </Button>
             </Link>
-            <Link href="/admin" className="block">
+            <Link href="/guardian-info" className="block">
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <Shield className="h-4 w-4" />
-                Admin
+                Guardian Info
               </Button>
             </Link>
+            {isAdmin && (
+              <Link href="/admin/qr-codes" className="block">
+                <Button variant="ghost" className="w-full justify-start gap-2">
+                  <Shield className="h-4 w-4" />
+                  QR Management
+                </Button>
+              </Link>
+            )}
           </nav>
 
           <div className="mt-6">

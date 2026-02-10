@@ -7,7 +7,9 @@ export default function SignupPage() {
       <div className="w-full space-y-6">
         <div className="space-y-1">
           <div className="text-2xl font-bold">Create your guardian account</div>
-          <div className="text-muted-foreground">Manage profiles and generate QR codes.</div>
+          <div className="text-muted-foreground">
+            Manage profiles, generate QR codes, and place orders (later).
+          </div>
         </div>
         <AuthCard mode="signup" />
         <div className="text-sm text-muted-foreground">

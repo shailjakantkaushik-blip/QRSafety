@@ -9,7 +9,9 @@ export default function PricingPage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="text-3xl font-bold">Pricing</div>
-          <div className="text-muted-foreground">Subscription per individual profile (Phase 1).</div>
+          <div className="text-muted-foreground">
+            Subscription per individual profile (Phase 1).
+          </div>
         </div>
         <Link href="/"><Button variant="outline">Back</Button></Link>
       </div>

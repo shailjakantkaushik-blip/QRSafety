@@ -2,6 +2,7 @@ import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { NotificationDropdown } from "@/components/ui/notification-dropdown";
 import { Badge } from "@/components/ui/badge";
 
 export default async function DashboardPage() {
@@ -22,7 +23,10 @@ export default async function DashboardPage() {
           <div className="text-2xl font-bold">Dashboard</div>
           <div className="text-muted-foreground">Welcome back, {user.email}</div>
         </div>
-        <Link href="/individuals"><Button>Manage individuals</Button></Link>
+        <div className="flex gap-2 items-center">
+          <NotificationDropdown />
+          <Link href="/individuals"><Button>Manage individuals</Button></Link>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
