@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { FaBell } from "react-icons/fa";
 
 export function NotificationDropdown() {
   const [open, setOpen] = useState(false);
@@ -10,46 +11,73 @@ export function NotificationDropdown() {
   const [hasUnread, setHasUnread] = useState(false);
 
   useEffect(() => {
+    // Always check unread notifications on mount and when guardianId changes
+    setLoading(true);
+    fetch(`/api/all-notifications?guardian_id=${guardianId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const notifications = data.notifications || [];
+        setNotifications(notifications);
+        const unread = notifications.slice(0, 10).some((n: any) => !n.read);
+        setHasUnread(unread);
+        if (unread) {
+          console.log('DEBUG: Unread notification detected, red dot should show.');
+        } else {
+          console.log('DEBUG: All last 10 notifications are read, no red dot.');
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setNotifications([]);
+        setHasUnread(false);
+        setLoading(false);
+      });
+  }, [guardianId]);
+
+  // Mark notifications as read only when dropdown is opened
+  useEffect(() => {
     if (open) {
-      setLoading(true);
       fetch("/api/mark-notifications-read", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ guardian_id: guardianId }),
       })
-        .then(() => fetch(`/api/all-notifications?guardian_id=${guardianId}`))
-        .then((res) => res.json())
-        .then((data) => {
-          setNotifications(data.notifications || []);
-          setHasUnread((data.notifications || []).some((n: any) => !n.read));
-          setLoading(false);
+        .then(() => {
+          // Refetch notifications after marking as read
+          return fetch(`/api/all-notifications?guardian_id=${guardianId}`);
         })
-        .catch(() => {
-          setNotifications([]);
-          setHasUnread(false);
-          setLoading(false);
+        .then((res) => res && res.json())
+        .then((data) => {
+          if (data && data.notifications) {
+            setNotifications(data.notifications);
+            const unread = data.notifications.slice(0, 10).some((n: any) => !n.read);
+            setHasUnread(unread);
+          }
         });
     }
   }, [open, guardianId]);
 
   return (
     <div style={{ position: "relative" }}>
-      <Button onClick={() => setOpen((v) => !v)} style={{ position: "relative" }}>
-        Notifications
-        {hasUnread && (
-          <span style={{
-            position: "absolute",
-            top: 4,
-            right: 4,
-            width: 12,
-            height: 12,
-            background: "#e00",
-            borderRadius: "50%",
-            border: "2px solid #fff",
-            display: "inline-block",
-          }} />
-        )}
-      </Button>
+      <div style={{ position: "relative", display: "inline-block" }}>
+        <Button onClick={() => setOpen((v) => !v)} style={{ position: "relative", minWidth: 48, minHeight: 48, padding: 0 }}>
+          <FaBell size={24} style={{ color: "#555" }} />
+          {hasUnread && (
+            <span style={{
+              position: "absolute",
+              top: 2,
+              right: 2,
+              width: 12,
+              height: 12,
+              background: "#e00",
+              borderRadius: "50%",
+              border: "2px solid #fff",
+              display: "inline-block",
+              zIndex: 10,
+            }} />
+          )}
+        </Button>
+      </div>
       {open && (
         <div
           style={{
