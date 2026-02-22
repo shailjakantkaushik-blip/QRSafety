@@ -2,7 +2,8 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState, useRef } from "react";
-import { createOrder } from "./order-actions";
+import { getProductIdByType } from "./product-ids";
+
 
 const PRODUCTS = [
   { id: "wristband", label: "Wrist Band" },
@@ -10,10 +11,12 @@ const PRODUCTS = [
   { id: "belthook", label: "Belt Hook" },
 ];
 
-export default function OrderPage() {
+export default function OrderPage({ individualId }: { individualId: string }) {
+  console.log('OrderPage received individualId:', individualId);
   const [selected, setSelected] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -23,14 +26,56 @@ export default function OrderPage() {
     setError(null);
     setSuccess(false);
     const formData = new FormData(e.currentTarget);
-    const res = await createOrder(formData);
+    // Convert FormData to object and ensure individual_id is set
+    const data: any = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+    data.individual_id = individualId;
+    if (!data.individual_id) {
+      alert('Error: individual_id is missing!');
+      setPending(false);
+      return;
+    }
+    // Fetch product_id by productType
+    const productType = data.productType;
+    const product_id = await getProductIdByType(productType);
+    if (!product_id) {
+      setError('Could not find product for selected type.');
+      setPending(false);
+      return;
+    }
+    data.product_id = product_id;
+    delete data.productType;
+    console.log('Submitting order data:', data);
+    // Submit order via API route
+    const res = await fetch('/api/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }).then(r => r.json());
     setPending(false);
-    if (res.ok) {
+    if (res.ok && res.order) {
+      setOrderId(res.order.id);
       setSuccess(true);
       formRef.current?.reset();
       setSelected(null);
     } else {
       setError(res.message || "Order failed. Try again.");
+    }
+    // Demo: Simulate payment completion
+    async function handlePaymentComplete() {
+      if (!orderId) return;
+      const res = await fetch('/api/update-order-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, newStatus: 'payment_completed_and_ordered' }),
+      }).then(r => r.json());
+      if (res.ok) {
+        alert('Payment completed and order status updated!');
+      } else {
+        alert('Failed to update order status: ' + (res.message || 'Unknown error'));
+      }
     }
   }
 
@@ -38,6 +83,7 @@ export default function OrderPage() {
     <main className="max-w-lg mx-auto py-10 px-4">
       <h1 className="text-2xl font-bold mb-6">Order QR Product</h1>
       <form ref={formRef} onSubmit={handleSubmit}>
+        {/* individual_id is added programmatically */}
         <Card className="p-6 mb-6">
           <div className="font-semibold mb-2">Select Product Type</div>
           <div className="grid gap-4">
@@ -72,7 +118,20 @@ export default function OrderPage() {
           {pending ? "Ordering..." : success ? "Order Placed!" : "Place Order"}
         </Button>
         {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
-        {success && <div className="text-green-600 text-sm mt-2">Order placed successfully! We will contact you soon.</div>}
+        {success && (
+          <>
+            <div className="text-green-600 text-sm mt-2">Order placed successfully! Proceed to payment.</div>
+            {orderId && (
+              <button
+                type="button"
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                onClick={handlePaymentComplete}
+              >
+                Simulate Payment Completion
+              </button>
+            )}
+          </>
+        )}
       </form>
     </main>
   );

@@ -40,7 +40,7 @@ export default async function AdminPage() {
           {(individuals ?? []).map((i) => (
             <div key={i.id} className="flex items-center justify-between">
               <span>{i.display_name}</span>
-              <span className="text-muted-foreground">{new Date(i.created_at).toLocaleString()}</span>
+              <span className="text-muted-foreground">{typeof window !== 'undefined' ? new Date(i.created_at).toLocaleString() : ''}</span>
             </div>
           ))}
         </div>

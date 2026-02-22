@@ -2,7 +2,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-// Notification logic removed
+import QrScanLocationCapture from "@/components/individuals/qr-scan-location-capture";
 
 export default async function PublicProfilePage({ params }: { params: { publicId?: string } } | { params: Promise<{ publicId?: string }> }) {
   // Next.js may pass params as a Promise in some dynamic routes, so always await if needed
@@ -45,6 +45,7 @@ export default async function PublicProfilePage({ params }: { params: { publicId
     .eq("public_id", publicId)
     .maybeSingle();
 
+
   console.log("Query error:", indivError);
   console.log("Individual found:", individual);
 
@@ -82,19 +83,16 @@ export default async function PublicProfilePage({ params }: { params: { publicId
   const scannedAt = new Date().toISOString();
   // Get guardian contact info (for demo, use first contact)
   const mainContact = contacts[0];
-  if (mainContact) {
-    // Notification logic removed
-      guardianPhone: mainContact.phone,
-      guardianEmail: null, // Add email if available
-      individualName: individual.display_name,
-      latitude,
-      longitude,
-      scannedAt,
-    });
-  }
+  // if (mainContact) {
+  //   // Notification logic removed
+  //   // Example: send notification or log scan event here
+  //   // { guardianPhone: mainContact.phone, ... }
+  // }
 
   return (
     <main className="mx-auto max-w-lg px-6 py-10">
+      {/* Hidden component to capture and send scan location (client component) */}
+      {individual.id && <QrScanLocationCapture individualId={individual.id} />}
       <div className="flex items-center justify-between">
         <div>
           <div className="text-sm text-muted-foreground">Emergency profile</div>

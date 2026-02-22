@@ -3,6 +3,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 const orderSchema = z.object({
+  individual_id: z.string().min(1),
   productType: z.enum(["wristband", "chesttag", "belthook"]),
   name: z.string().min(1),
   email: z.string().email(),
@@ -12,8 +13,8 @@ const orderSchema = z.object({
   country: z.string().min(1),
 });
 
-export async function createOrder(data: {
-  productType: string;
+  individual_id: string;
+  product_id: string;
   name: string;
   email: string;
   address: string;
@@ -26,11 +27,21 @@ export async function createOrder(data: {
     return { ok: false, message: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
   const supabase = supabaseAdmin();
-  const { error } = await supabase.from("orders").insert({
+  const { error, data: inserted } = await supabase.from("orders").insert({
     ...parsed.data,
-    status: "pending",
+    status: "ordered_payment_not_finalised",
     created_at: new Date().toISOString(),
-  });
+  }).select().single();
+  if (error) return { ok: false, message: error.message };
+  return { ok: true, order: inserted };
+}
+// Update order status after payment
+export async function updateOrderStatus(orderId: string, newStatus: string) {
+  const supabase = supabaseAdmin();
+  const { error } = await supabase
+    .from("orders")
+    .update({ status: newStatus })
+    .eq("id", orderId);
   if (error) return { ok: false, message: error.message };
   return { ok: true };
 }

@@ -7,8 +7,15 @@ export function NotificationDropdown() {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<{ id: string; message: string; created_at: string; read: boolean }[]>([]);
   const [loading, setLoading] = useState(false);
-  const guardianId = typeof window !== "undefined" ? localStorage.getItem("guardian_id") || "" : "";
+  const [guardianId, setGuardianId] = useState("");
   const [hasUnread, setHasUnread] = useState(false);
+
+  // Set guardianId from localStorage on client only
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setGuardianId(localStorage.getItem("guardian_id") || "");
+    }
+  }, []);
 
   useEffect(() => {
     // Always check unread notifications on mount and when guardianId changes
@@ -106,7 +113,7 @@ export function NotificationDropdown() {
             notifications.map((n) => (
               <div key={n.id} style={{ padding: "12px 16px", borderBottom: "1px solid #f5f5f5" }}>
                 <div style={{ fontSize: 14 }}>{n.message}</div>
-                <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>{new Date(n.created_at).toLocaleString()}</div>
+                <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>{typeof window !== 'undefined' ? new Date(n.created_at).toLocaleString() : ''}</div>
                 {!n.read && (
                   <span style={{ color: "#e00", fontWeight: 600, fontSize: 12 }}>Unread</span>
                 )}

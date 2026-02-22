@@ -4,18 +4,23 @@ import { Button } from "@/components/ui/button";
 import { useState, useRef } from "react";
 import { createOrder } from "../order-actions";
 
-const PRODUCTS = [
-  { id: "wristband", label: "Wrist Band" },
-  { id: "chesttag", label: "Chest Tag" },
-  { id: "belthook", label: "Belt Hook" },
-];
+
+
 
 export default function OrderPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [products, setProducts] = useState<any[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Fetch products from API
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => setProducts(data.products || []));
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,8 +60,11 @@ export default function OrderPage() {
         <Card className="p-6 mb-6">
           <div className="font-semibold mb-2">Select Product Type</div>
           <div className="grid gap-4">
-            {PRODUCTS.map((p) => (
-              <label key={p.id} className={`flex items-center gap-3 p-3 border rounded cursor-pointer transition ${selected === p.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}> 
+            {products.length === 0 && (
+              <div className="text-muted-foreground">No products available.</div>
+            )}
+            {products.map((p) => (
+              <label key={p.id} className={`flex items-center gap-3 p-3 border rounded cursor-pointer transition ${selected === p.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}>
                 <input
                   type="radio"
                   name="productType"
@@ -66,7 +74,9 @@ export default function OrderPage() {
                   className="accent-blue-500"
                   required
                 />
-                <span className="font-medium">{p.label}</span>
+                <span className="font-medium">{p.name}</span>
+                <span className="ml-2 text-xs text-muted-foreground">{p.type}</span>
+                <span className="ml-2 text-xs text-muted-foreground">{p.description}</span>
               </label>
             ))}
           </div>

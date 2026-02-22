@@ -42,7 +42,9 @@ export default function GuardianNotifications() {
             notifications.map((n) => (
               <div key={n.id} className="p-4 border-b last:border-b-0">
                 <div className="text-sm">{n.message}</div>
-                <div className="text-xs text-muted-foreground mt-1">{new Date(n.created_at).toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {typeof window !== 'undefined' ? new Date(n.created_at).toLocaleString() : ''}
+                </div>
               </div>
             ))
           )}

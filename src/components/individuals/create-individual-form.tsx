@@ -64,7 +64,7 @@ export function CreateIndividualForm() {
 
       <div className="md:col-span-2">
         <Button disabled={pending} className="w-full">
-          {pending ? "Creating..." : "Create individual + generate QR"}
+          {pending ? "Saving..." : "Save Profile"}
         </Button>
       </div>
     </form>

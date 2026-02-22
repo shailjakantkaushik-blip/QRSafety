@@ -2,8 +2,10 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 // Notification logic removed
+
 import { SessionProvider } from "@/lib/session-context";
 import { NotificationProvider } from "@/components/ui/notification";
+import { CartProvider } from "@/components/shop/cart-context";
 
 export const metadata: Metadata = {
   title: "SafeQR — Emergency QR Profiles",
@@ -17,7 +19,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <NotificationProvider>
             <SessionProvider>
-              {children}
+              <CartProvider>
+                {children}
+              </CartProvider>
             </SessionProvider>
           </NotificationProvider>
         </ThemeProvider>

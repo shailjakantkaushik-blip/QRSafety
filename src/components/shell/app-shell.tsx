@@ -49,6 +49,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 Individuals
               </Button>
             </Link>
+            <Link href="/shop" className="block">
+              <Button variant="ghost" className="w-full justify-start gap-2">
+                <span className="h-4 w-4 inline-block">🛒</span>
+                Shop
+              </Button>
+            </Link>
             <Link href="/guardian-info" className="block">
               <Button variant="ghost" className="w-full justify-start gap-2">
                 <Shield className="h-4 w-4" />
@@ -56,12 +62,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Button>
             </Link>
             {isAdmin && (
-              <Link href="/admin/qr-codes" className="block">
-                <Button variant="ghost" className="w-full justify-start gap-2">
-                  <Shield className="h-4 w-4" />
-                  QR Management
-                </Button>
-              </Link>
+              <>
+                <Link href="/admin/qr-codes" className="block">
+                  <Button variant="ghost" className="w-full justify-start gap-2">
+                    <Shield className="h-4 w-4" />
+                    QR Management
+                  </Button>
+                </Link>
+                <Link href="/admin/products" className="block">
+                  <Button variant="ghost" className="w-full justify-start gap-2">
+                    <span className="h-4 w-4 inline-block">📦</span>
+                    Admin Products
+                  </Button>
+                </Link>
+              </>
             )}
           </nav>
 
