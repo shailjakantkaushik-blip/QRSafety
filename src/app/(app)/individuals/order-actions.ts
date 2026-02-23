@@ -13,6 +13,7 @@ const orderSchema = z.object({
   country: z.string().min(1),
 });
 
+export async function createOrder(data: {
   individual_id: string;
   product_id: string;
   name: string;
