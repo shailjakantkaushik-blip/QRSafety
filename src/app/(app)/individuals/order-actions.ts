@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 
 const orderSchema = z.object({
   individual_id: z.string().min(1),
-  productType: z.enum(["wristband", "chesttag", "belthook"]),
+  product_id: z.string().min(1),
   name: z.string().min(1),
   email: z.string().email(),
   address: z.string().min(1),
