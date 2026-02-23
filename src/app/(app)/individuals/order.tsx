@@ -2,7 +2,20 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState, useRef } from "react";
-import { getProductIdByType } from "./product-ids";
+
+import { supabaseBrowser } from '@/lib/supabase/client';
+
+async function getProductIdByType(productType: string) {
+  const supabase = supabaseBrowser();
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, type')
+    .eq('type', productType)
+    .single();
+  console.log('getProductIdByType:', { productType, data, error });
+  if (error || !data) return null;
+  return data.id;
+}
 
 
 const PRODUCTS = [
